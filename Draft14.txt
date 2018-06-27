@@ -1,0 +1,184 @@
+#include <SoftwareSerial.h>
+
+SoftwareSerial BT(10, 11); //TX, RX respetively
+String voice;
+int Relay1In1=7;
+int Relay1In2=6;
+int Relay2In1=5;
+int Relay2In2=8;
+
+void setup() {
+//  digitalWrite(R7,HIGH);
+ BT.begin(9600);
+ Serial.begin(9600);
+ // pinMode(Room1_Light, OUTPUT);
+ // pinMode(Room2_Fan,OUTPUT); 
+  pinMode(Relay1In1,OUTPUT);
+  pinMode(Relay1In2,OUTPUT);
+  pinMode(Relay2In1,OUTPUT);
+  pinMode(Relay2In2,OUTPUT);
+  digitalWrite(Relay1In1,1);
+  digitalWrite(Relay1In2,1);
+  digitalWrite(Relay2In1,1);
+  digitalWrite(Relay2In2,1);
+}
+//-----------------------------------------------------------------------//  
+void loop() {
+
+while(BT.available())
+{
+  char c=BT.read();
+  if(!(c>='a'&&c<='z'||c>='1'&&c<='9'||(int)c==32))
+    break;
+  voice+=c;
+}
+delay(100);
+
+Serial.println(voice); 
+
+if(isSubstring(voice,"room")||isSubstring(voice,"Room"))    //Functions starting with Room
+{
+  //Serial.println("Reaching room");
+  
+  Serial.println("Chal Raha hai");
+    if(isSubstring(voice,"one")||isSubstring(voice,"1"))
+    {
+      //Serial.println("Reaching 1");
+      if(isSubstring(voice,"light")||isSubstring(voice,"lights"))
+      {
+        //Serial.println("Reaching light");
+        if(isSubstring(voice,"on") && !isSubstring(voice,"off") && !isSubstring(voice,"of"))
+        {
+        //  Serial.println("Reaching ON");
+          digitalWrite(Relay1In1,0);
+          Serial.println("Chal Raha hai On");
+        }
+        else
+        if(isSubstring(voice,"off")||isSubstring(voice,"of"))
+        {
+          Serial.println("Reaching OFF");
+        digitalWrite(Relay1In1,1);
+        Serial.println("Chal Raha hai off");
+        }
+      }
+      else
+      if(isSubstring(voice,"television")||isSubstring(voice,"tv")||isSubstring(voice,"TV"))
+      {
+        //Serial.println("Reaching light");
+        if(isSubstring(voice,"on") && !isSubstring(voice,"off") && !isSubstring(voice,"of"))
+        {
+          ///Serial.println("Reaching ON");
+          digitalWrite(Relay2In1,0);
+        }
+        else
+        if(isSubstring(voice,"off")||isSubstring(voice,"of"))
+        {
+          Serial.println("Reaching OFF");
+        digitalWrite(Relay2In1,1);
+        }
+      }
+    }
+    else
+    if(isSubstring(voice,"two")||isSubstring(voice,"to")||isSubstring(voice,"2")||isSubstring(voice,"too"))
+    {
+    //Serial.println("Reaching 1");
+      if(isSubstring(voice,"light")||isSubstring(voice,"lights"))
+      {
+        //Serial.println("Reaching light");
+        if(isSubstring(voice,"on") && !isSubstring(voice,"off") && !isSubstring(voice,"of"))
+        {
+          digitalWrite(Relay1In2,0);
+          Serial.println("Chal Raha hai on");
+        }
+        else
+        if(isSubstring(voice,"off")||isSubstring(voice,"of"))
+        {
+        digitalWrite(Relay1In2,1);
+        Serial.println("Chal Raha hai off");
+        }
+      }
+      else
+      if(isSubstring(voice,"fan")||isSubstring(voice,"fans"))
+      {
+        //Serial.println("Reaching light");
+        if(isSubstring(voice,"on") && !isSubstring(voice,"off") && !isSubstring(voice,"of"))
+        {
+        //  Serial.println("Reaching ON");
+          digitalWrite(Relay2In2,0);
+        }
+        else
+        if(isSubstring(voice,"off")||isSubstring(voice,"of"))
+        {
+          Serial.println("Reaching OFF");
+        digitalWrite(Relay2In2,1);
+        }
+      }
+    }
+}
+else if(isSubstring(voice,"all")||isSubstring(voice,"everything")||isSubstring(voice,"everything")||isSubstring(voice,"All")||isSubstring(voice,"Everything")||isSubstring(voice,"Everything"))
+{
+  if(isSubstring(voice,"lights")||isSubstring(voice,"light"))
+  {
+    if(isSubstring(voice,"on") && !isSubstring(voice,"off") && !isSubstring(voice,"of"))
+        {
+        //  Serial.println("Reaching ON");
+          digitalWrite(Relay1In1,0);
+          digitalWrite(Relay1In2,0);
+          Serial.println("Chal Raha hai On");
+        }
+        else
+        if(isSubstring(voice,"off")||isSubstring(voice,"of"))
+        {
+          Serial.println("Reaching OFF");
+          digitalWrite(Relay1In1,1);
+          digitalWrite(Relay1In2,1);
+          Serial.println("Chal Raha hai off");
+        }
+  }
+  else
+  if(isSubstring(voice,"appliances")||isSubstring(voice,"appliance")||isSubstring(voice,"devices")||isSubstring(voice,"device"))
+  {
+    if(isSubstring(voice,"on") && !isSubstring(voice,"off") && !isSubstring(voice,"of"))
+        {
+          digitalWrite(Relay1In1,0);
+          digitalWrite(Relay1In2,0);
+          digitalWrite(Relay2In1,0);
+          digitalWrite(Relay2In2,0);
+          Serial.println("Chal Raha hai On");
+         }
+        else
+        if(isSubstring(voice,"off")||isSubstring(voice,"of"))
+        {
+          digitalWrite(Relay1In1,1);
+          digitalWrite(Relay1In2,1);
+          digitalWrite(Relay2In1,1);
+          digitalWrite(Relay2In2,1);
+          Serial.println("Chal Raha hai Off");
+        }
+  }
+}	
+
+voice="";
+}
+boolean isSubstring(String str1,String str2)
+{
+  int flag=0;
+    for (int i = 0; i <= str1.length() - str2.length(); i++)
+    {
+        for (int j = i; j < i + str2.length(); j++)
+        {
+            flag = 1;
+            if (str1.charAt(j) != str2.charAt(j - i))
+            {
+                flag = 0;
+                break;
+            }
+        }
+        if (flag == 1)
+            break;
+    }
+    if (flag == 1)
+        return true;
+    else
+        return false;
+}
